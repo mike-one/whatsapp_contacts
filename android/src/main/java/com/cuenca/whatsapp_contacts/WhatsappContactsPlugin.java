@@ -9,7 +9,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -19,7 +19,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 /**
  * WhatsappContactsPlugin
  */
-public class WhatsappContactsPlugin implements MethodCallHandler {
+public class WhatsappContactsPlugin implements MethodCallHandler, FlutterPlugin{
     /**
      * Plugin registration.
      */
@@ -33,6 +33,8 @@ public class WhatsappContactsPlugin implements MethodCallHandler {
     }
 
     private final Registrar registrar;
+    private MethodChannel channel;
+    private FlutterPluginBinding binding;
 
     @Override
     public void onMethodCall(MethodCall call, Result result) {
@@ -42,6 +44,18 @@ public class WhatsappContactsPlugin implements MethodCallHandler {
         } else {
             result.notImplemented();
         }
+    }
+
+    @Override
+    public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+        channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "com.cuenca.plugin.whatsapp_contacts");
+        this.binding = binding;
+        channel.setMethodCallHandler(this);
+    }
+
+    @Override
+    public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        channel.setMethodCallHandler(null);
     }
 
     // Implementation based on https://stackoverflow.com/questions/35448250/how-to-get-whatsapp-contacts-from-android by @mansukh-ahir
